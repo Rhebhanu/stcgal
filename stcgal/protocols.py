@@ -102,13 +102,17 @@ class StcBaseProtocol(ABC):
     def progress_bar_cb(self, current, written, maximum):
         if not self.progress:
             self.progress = tqdm.tqdm(
-                total = maximum,
-                unit = " Bytes",
-                desc = "Writing flash"
-                )
-        self.progress.update(written)
+                total=maximum,
+                unit="Bytes",
+                desc="Writing flash",
+                dynamic_ncols=True,
+                ascii=True  # Use ASCII-only output for better compatibility
+            )
+        self.progress.n = current  # Set the current progress
+        self.progress.refresh()  # Force the progress bar to refresh
         if current == maximum:
             self.progress.close()
+
 
     def dump_packet(self, data, receive=True):
         if self.debug:
